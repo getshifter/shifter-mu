@@ -75,7 +75,7 @@ class Diag {
 
 	// Function used in the action hook
 	public function add_dashboard_widgets() {
-		wp_add_dashboard_widget('dashboard_widget', 'Example Dashboard Widget', array( $this, 'dashboard_widget_function' ) );
+		wp_add_dashboard_widget('dashboard_widget', 'Shifter', array( $this, 'dashboard_widget_function' ) );
 	}
 	
 }
