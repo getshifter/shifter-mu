@@ -11,7 +11,7 @@
  * Plugin Name:       Shifter
  * Plugin URI:        https://github.com/getshifter/shifter-mu
  * Description:       Shifter MU-Plugin Wrapper
- * Version:           0.1.0
+ * Version:           0.1.2
  * Author:            Shifter
  * Author URI:        https://getshifter.io
  * Text Domain:       shifter-mu
@@ -28,7 +28,7 @@ function shifter_icon() {
  }
 
 function shifter_mu_admin_bar() {
-  
+
   global $wp_admin_bar;
 
   $shifter_top_menu = '
@@ -55,7 +55,7 @@ function shifter_mu_admin_page() {
     'Shifter\\MU\\shifter_mu_admin',
     shifter_icon()
   );
-  
+
 }
 
 function shifter_mu_admin() {
