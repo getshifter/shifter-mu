@@ -28,16 +28,61 @@ class Plugin {
 		 */
 	public static $instance = null;
 
+	/**
+	 * Settings page ID for Elementor settings.
+	 */
+	const PAGE_ID = '';
+
 		/**
-		 * Create tabs.
+		 * Tabs.
 		 *
-		 * Return the settings page tabs, sections and fields.
+		 * Holds the settings page tabs, sections and fields.
+		 *
+		 * @access private
+		 *
+		 * @var array
+		 */
+	private $tabs;
+
+		/**
+		 * Get settings page title.
+		 *
+		 * Retrieve the title for the settings page.
 		 *
 		 * @since 1.5.0
 		 * @access protected
 		 *
-		 * @return array An array with the settings page tabs, sections and fields.
+		 * @return string Settings page title.
 		 */
+	protected function get_page_title() {
+		return __( 'Shifter', 'shifter' );
+	}
+
+		/**
+	 * Settings page general tab slug.
+	 */
+	const TAB_GENERAL = 'general';
+
+		/**
+	 * Settings page style tab slug.
+	 */
+	const TAB_STYLE = 'style';
+
+		/**
+	 * Settings page advanced tab slug.
+	 */
+	const TAB_ADVANCED = 'advanced';
+
+	/**
+	 * Create tabs.
+	 *
+	 * Return the settings page tabs, sections and fields.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 *
+	 * @return array An array with the settings page tabs, sections and fields.
+	 */
 	protected function create_tabs() {
 
 		return [
@@ -45,7 +90,16 @@ class Plugin {
 				'label'    => __( 'General', 'elementor' ),
 				'sections' => [
 					'general' => [
-						'fields' => [],
+						'fields' => [
+							'disable_typography_schemes' => [
+								'label'      => __( 'Disable Default Fonts', 'elementor' ),
+								'field_args' => [
+									'type'     => 'checkbox',
+									'value'    => 'yes',
+									'sub_desc' => __( 'Checking this box will disable Elementor\'s Default Fonts, and make Elementor inherit the fonts from your theme.', 'elementor' ),
+								],
+							],
+						],
 					],
 				],
 			],
@@ -53,7 +107,7 @@ class Plugin {
 	}
 
 
-		/**
+	/**
 	 * Get tabs.
 	 *
 	 * Retrieve the settings page tabs, sections and fields.
@@ -70,6 +124,81 @@ class Plugin {
 	}
 
 	/**
+	 * Display settings page.
+	 *
+	 * Output the content for the settings page.
+	 *
+	 * @since 1.5.0
+	 * @access public
+	 */
+	public function display_settings_page() {
+		$tabs = $this->get_tabs();
+		?>
+		<div class="wrap">
+			<h1><?php echo $this->get_page_title(); ?></h1>
+			<div id="elementor-settings-tabs-wrapper" class="nav-tab-wrapper">
+				<?php
+				foreach ( $tabs as $tab_id => $tab ) {
+					if ( empty( $tab['sections'] ) ) {
+						continue;
+					}
+
+					$active_class = '';
+
+					if ( 'general' === $tab_id ) {
+						$active_class = ' nav-tab-active';
+					}
+
+					echo "<a id='elementor-settings-tab-{$tab_id}' class='nav-tab{$active_class}' href='#tab-{$tab_id}'>{$tab['label']}</a>";
+				}
+				?>
+			</div>
+			<form id="elementor-settings-form" method="post" action="options.php">
+				<?php
+				settings_fields( static::PAGE_ID );
+
+				foreach ( $tabs as $tab_id => $tab ) {
+					if ( empty( $tab['sections'] ) ) {
+						continue;
+					}
+
+					$active_class = '';
+
+					if ( 'general' === $tab_id ) {
+						$active_class = ' elementor-active';
+					}
+
+					echo "<div id='tab-{$tab_id}' class='elementor-settings-form-page{$active_class}'>";
+
+					foreach ( $tab['sections'] as $section_id => $section ) {
+						$full_section_id = 'elementor_' . $section_id . '_section';
+
+						if ( ! empty( $section['label'] ) ) {
+							echo "<h2>{$section['label']}</h2>";
+						}
+
+						if ( ! empty( $section['callback'] ) ) {
+							$section['callback']();
+						}
+
+						echo '<table class="form-table">';
+
+						do_settings_fields( static::PAGE_ID, $full_section_id );
+
+						echo '</table>';
+					}
+
+					echo '</div>';
+				}
+
+				submit_button();
+				?>
+			</form>
+		</div><!-- /.wrap -->
+		<?php
+	}
+
+	/**
 	 * Ensure tabs.
 	 *
 	 * Make sure the settings page has tabs before inserting any new sections or
@@ -83,112 +212,6 @@ class Plugin {
 			$this->tabs = $this->create_tabs();
 		}
 	}
-
-	/**
-	 * Display settings page.
-	 *
-	 * Output the content for the settings page.
-	 *
-	 * @since 1.5.0
-	 * @access public
-	 */
-	public function display_settings_page() { ?>
-<div class="wrap">
-  <h1>Elementor</h1>
-  <div id="elementor-settings-tabs-wrapper" class="nav-tab-wrapper">
-    <a
-      id="elementor-settings-tab-general"
-      class="nav-tab nav-tab-active"
-      href="#tab-general"
-      >General</a
-    ><a id="elementor-settings-tab-style" class="nav-tab" href="#tab-style"
-      >Style</a
-    >
-  </div>
-  <form
-    id="elementor-settings-form"
-    method="post"
-    action="options.php#tab-general"
-  >
-    <input type="hidden" name="option_page" value="elementor" /><input
-      type="hidden"
-      name="action"
-      value="update"
-    /><input
-      type="hidden"
-      id="_wpnonce"
-      name="_wpnonce"
-      value="72456108aa"
-    /><input
-      type="hidden"
-      name="_wp_http_referer"
-      value="/wp-admin/admin.php?page=elementor"
-    />
-    <div id="tab-general" class="elementor-settings-form-page elementor-active">
-      <table class="form-table">
-        <tbody>
-          <tr class="_elementor_settings_update_time">
-            <th scope="row"></th>
-            <td>
-              <input
-                type="hidden"
-                id="_elementor_settings_update_time"
-                name="_elementor_settings_update_time"
-                value="1549931326"
-                class="regular-text"
-              />
-            </td>
-          </tr>
-          <tr class="elementor_cpt_support">
-            <th scope="row">Post Types</th>
-            <td>
-              <label>
-                <input
-                  type="checkbox"
-                  name="elementor_cpt_support[]"
-                  value="post"
-                  checked="checked"
-                />
-                Posts </label
-              ><br />
-              <label>
-                <input
-                  type="checkbox"
-                  name="elementor_cpt_support[]"
-                  value="page"
-                  checked="checked"
-                />
-                Pages </label
-              ><br />
-              <label>
-                <input
-                  type="checkbox"
-                  name="elementor_cpt_support[]"
-                  value="contribution"
-                />
-                Contributions </label
-              ><br />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div id="tab-style" class="elementor-settings-form-page">
-	  </div>
-    <p class="submit">
-      <input
-        type="submit"
-        name="submit"
-        id="submit"
-        class="button button-primary"
-        value="Save Changes"
-      />
-    </p>
-  </form>
-</div>
-		<?php
-	}
-
 
 	/**
 	 * Register admin menu.
