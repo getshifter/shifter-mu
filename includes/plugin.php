@@ -66,12 +66,7 @@ class Plugin {
 		/**
 	 * Settings page style tab slug.
 	 */
-	const TAB_STYLE = 'style';
-
-		/**
-	 * Settings page advanced tab slug.
-	 */
-	const TAB_ADVANCED = 'advanced';
+	const TAB_GENERATOR = 'generator';
 
 	/**
 	 * Create tabs.
@@ -86,17 +81,54 @@ class Plugin {
 	protected function create_tabs() {
 
 		return [
-			self::TAB_GENERAL => [
-				'label'    => __( 'General', 'elementor' ),
+			self::TAB_GENERAL   => [
+				'label'    => __( 'General', 'shifter' ),
 				'sections' => [
 					'general' => [
 						'fields' => [
-							'disable_typography_schemes' => [
-								'label'      => __( 'Disable Default Fonts', 'elementor' ),
+							'generator_settings_card' => [
+								'label'      => __( 'Generator Settings', 'shifter' ),
 								'field_args' => [
-									'type'     => 'checkbox',
-									'value'    => 'yes',
-									'sub_desc' => __( 'Checking this box will disable Elementor\'s Default Fonts, and make Elementor inherit the fonts from your theme.', 'elementor' ),
+									'target'   => '_blank',
+									'rel'      => '',
+									'sub_desc' => __( 'Customize your static site generator settings for faster build times.', 'shifter' ),
+									'href'     => 'admin.php?page=shifter-settings',
+								],
+							],
+							'support_card'            => [
+								'label'      => __( 'Docs & Support', 'shifter' ),
+								'field_args' => [
+									'target'   => '',
+									'rel'      => 'noopener noreferrer',
+									'sub_desc' => __( 'Need help with something or have a question? Check out our documentation or contact support for more help.', 'shifter' ),
+									'href'     => 'https://go.getshifter.io',
+								],
+							],
+						],
+					],
+				],
+			],
+			self::TAB_GENERATOR => [
+				'label'    => __( 'Generator', 'shifter' ),
+				'sections' => [
+					'generator' => [
+						'fields' => [
+							'generator_settings_card' => [
+								'label'      => __( 'Generator Settings', 'shifter' ),
+								'field_args' => [
+									'target'   => '_blank',
+									'rel'      => '',
+									'sub_desc' => __( 'Customize your static site generator settings for faster build times.', 'shifter' ),
+									'href'     => 'admin.php?page=shifter-settings',
+								],
+							],
+							'support_card'            => [
+								'label'      => __( 'Docs & Support', 'shifter' ),
+								'field_args' => [
+									'target'   => '',
+									'rel'      => 'noopener noreferrer',
+									'sub_desc' => __( 'Need help with something or have a question? Check out our documentation or contact support for more help.', 'shifter' ),
+									'href'     => 'https://go.getshifter.io',
 								],
 							],
 						],
@@ -153,7 +185,6 @@ class Plugin {
 				}
 				?>
 			</div>
-			<form id="elementor-settings-form" method="post" action="options.php">
 				<?php
 				settings_fields( static::PAGE_ID );
 
@@ -183,17 +214,24 @@ class Plugin {
 
 						echo '<table class="form-table">';
 
-						do_settings_fields( static::PAGE_ID, $full_section_id );
+						foreach ( $section as $item_id => $item ) {
+							foreach ( $item as $i ) {
+								?>
+								<div class='card'>
+								<h2 class='title'><?php echo $i['label']; ?></h2>
+								<span><?php echo $i['field_args']['sub_desc']; ?></span>
+								<p class='submit'><a target='<?php echo $i['field_args']['target']; ?>' rel='<?php echo $i['field_args']['rel']; ?>' class='button button-primary' href='<?php echo $i['field_args']['href']; ?>'><?php echo $i['label']; ?></a></p>
+								</div>
+								<?php
+							}
+						}
 
 						echo '</table>';
 					}
 
 					echo '</div>';
 				}
-
-				submit_button();
 				?>
-			</form>
 		</div><!-- /.wrap -->
 		<?php
 	}
