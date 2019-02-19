@@ -3,7 +3,7 @@
  *
  * Must-use WordPress Plugins for Shifter
  *
- * @package   shifter_wp_mu
+ * @package   Shifter
  * @author    DigitalCube
  * @license   GPL-3.0
  * @link      https://getshifter.io

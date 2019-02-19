@@ -2,101 +2,247 @@
 
 namespace Shifter;
 
-use Shifter\Core\Admin\Admin;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Shifter WordPress Must-use Plugin.
+ * Shifter.
  *
- * The main plugin handler class is responsible for initializing
- * Shifter mu-plugins and functions.
+ * The main plugin handler class is responsible for initializing Shifter
  *
  * @since 1.0.0
  */
 class Plugin {
-	/**
-	 * Admin.
+
+		/**
+		 * Instance.
+		 *
+		 * Holds the plugin instance.
+		 *
+		 * @since 1.0.0
+		 * @access public
+		 * @static
+		 *
+		 * @var Plugin
+		 */
+	public static $instance = null;
+
+		/**
+		 * Create tabs.
+		 *
+		 * Return the settings page tabs, sections and fields.
+		 *
+		 * @since 1.5.0
+		 * @access protected
+		 *
+		 * @return array An array with the settings page tabs, sections and fields.
+		 */
+	protected function create_tabs() {
+
+		return [
+			self::TAB_GENERAL => [
+				'label'    => __( 'General', 'elementor' ),
+				'sections' => [
+					'general' => [
+						'fields' => [],
+					],
+				],
+			],
+		];
+	}
+
+
+		/**
+	 * Get tabs.
 	 *
-	 * Holds the plugin admin.
+	 * Retrieve the settings page tabs, sections and fields.
+	 *
+	 * @since 1.5.0
+	 * @access public
+	 *
+	 * @return array Settings page tabs, sections and fields.
+	 */
+	final public function get_tabs() {
+		$this->ensure_tabs();
+
+		return $this->tabs;
+	}
+
+	/**
+	 * Ensure tabs.
+	 *
+	 * Make sure the settings page has tabs before inserting any new sections or
+	 * fields.
+	 *
+	 * @since 1.5.0
+	 * @access private
+	 */
+	private function ensure_tabs() {
+		if ( null === $this->tabs ) {
+			$this->tabs = $this->create_tabs();
+		}
+	}
+
+	/**
+	 * Display settings page.
+	 *
+	 * Output the content for the settings page.
+	 *
+	 * @since 1.5.0
+	 * @access public
+	 */
+	public function display_settings_page() { ?>
+<div class="wrap">
+  <h1>Elementor</h1>
+  <div id="elementor-settings-tabs-wrapper" class="nav-tab-wrapper">
+    <a
+      id="elementor-settings-tab-general"
+      class="nav-tab nav-tab-active"
+      href="#tab-general"
+      >General</a
+    ><a id="elementor-settings-tab-style" class="nav-tab" href="#tab-style"
+      >Style</a
+    >
+  </div>
+  <form
+    id="elementor-settings-form"
+    method="post"
+    action="options.php#tab-general"
+  >
+    <input type="hidden" name="option_page" value="elementor" /><input
+      type="hidden"
+      name="action"
+      value="update"
+    /><input
+      type="hidden"
+      id="_wpnonce"
+      name="_wpnonce"
+      value="72456108aa"
+    /><input
+      type="hidden"
+      name="_wp_http_referer"
+      value="/wp-admin/admin.php?page=elementor"
+    />
+    <div id="tab-general" class="elementor-settings-form-page elementor-active">
+      <table class="form-table">
+        <tbody>
+          <tr class="_elementor_settings_update_time">
+            <th scope="row"></th>
+            <td>
+              <input
+                type="hidden"
+                id="_elementor_settings_update_time"
+                name="_elementor_settings_update_time"
+                value="1549931326"
+                class="regular-text"
+              />
+            </td>
+          </tr>
+          <tr class="elementor_cpt_support">
+            <th scope="row">Post Types</th>
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  name="elementor_cpt_support[]"
+                  value="post"
+                  checked="checked"
+                />
+                Posts </label
+              ><br />
+              <label>
+                <input
+                  type="checkbox"
+                  name="elementor_cpt_support[]"
+                  value="page"
+                  checked="checked"
+                />
+                Pages </label
+              ><br />
+              <label>
+                <input
+                  type="checkbox"
+                  name="elementor_cpt_support[]"
+                  value="contribution"
+                />
+                Contributions </label
+              ><br />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="tab-style" class="elementor-settings-form-page">
+	  </div>
+    <p class="submit">
+      <input
+        type="submit"
+        name="submit"
+        id="submit"
+        class="button button-primary"
+        value="Save Changes"
+      />
+    </p>
+  </form>
+</div>
+		<?php
+	}
+
+
+	/**
+	 * Register admin menu.
+	 *
+	 * Add new Elementor Settings admin menu.
+	 *
+	 * Fired by `admin_menu` action.
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 *
-	 * @var Admin
 	 */
-	public $admin;
+	public function register_admin_menu() {
+		global $menu;
+
+		add_menu_page(
+			__( 'Shifter', 'shifter' ),
+			__( 'Shifter', 'shifter' ),
+			'manage_options',
+			'shifter',
+			[ $this, 'display_settings_page' ]
+		);
+	}
+
+		/**
+		 * Instance.
+		 *
+		 * Ensures only one instance of the plugin class is loaded or can be loaded.
+		 *
+		 * @since 1.0.0
+		 * @access public
+		 * @static
+		 *
+		 * @return Plugin An instance of the class.
+		 */
+	public static function instance() {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+		/**
+		 * Settings page constructor.
+		 *
+		 * Initializing Elementor "Settings" page.
+		 *
+		 * @since 1.0.0
+		 * @access public
+		 */
+	public function __construct() {
+		add_action( 'admin_menu', [ $this, 'register_admin_menu' ], 20 );
+	}
 }
 
-/**
- * Shifter Icon
- */
-function shifter_icon() {
-	return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4QUQCAwVRk5ANwAAAeFJREFUOMu9lEFIVEEYx38zs7LiQSja7BAaHcIoaqGDslFIyEadYusU0cki6yAaBV0FD8kSBGlLeVEwIcgkKMukDmEYLLXtJamI7dihQ0Qs+t73psM+t0V9vidI32mGmfl98/2/+Y/Cj9nMSN6IHIiJgxEHI+6ftplrW9hgxGrGFqgLWIscmk2OWqDajGS1ZS0A5RpwGeBDR7824hITB+05Xut8llLystKeKCNuRW/XVUpZ2fZlogKczYzQOdl1LiBpCYgD9aAO+vMe4Ea1Mq0KWDkO2BhA52QXr07dw3jSqj25YMTJp6Z7J/wDiQoMwC7L0ABs93lvEp/H06t0OjZ1EavUDNAHPHiXzu6PINnXHQujR3/sPR8ofKL6hpRKhMB+WaP3ATR9GgsAWo4Aj4Du9hdXX68D+yi6fuvO4v2l9bpMx5NLeeAMwNsTt0hN961J21UYflpKXtnYww6C/YMO/R+nRPHruO/xOuB32OaVdmPu5G2lrBf3fxyMuN6yU4y4uuoOcW1zMbcY5YaNvg3jIRf5BhyKAiz7TmgMqe5hpKYcftazhGUwBOY1F3M3I3c59bx3AMvjtVkWqzgN8D3ZHQ04n87S9vJ6BjgLzAGLFn4COWDP7vd3pgBaCndXnf0LIlef9HGSOIAAAAAASUVORK5CYII=';
-}
+Plugin::instance();
 
-/**
- * Create WordPress admin bar
- */
-function shifter_mu_admin_bar() {
-	global $wp_admin_bar;
-
-	$shifter_top_menu = '
-	<span class="ab-icon">
-	  <img src="' . shifter_icon() . '" alt="Shifter Icon" />
-	</span>
-	<span class="ab-label">Shifter</span>';
-
-	$wp_admin_bar->add_menu(
-		array(
-			'id'    => 'shifter',
-			'title' => $shifter_top_menu,
-			'href'  => admin_url() . 'admin.php?page=shifter',
-		)
-	);
-}
-
-/**
- * Create admin page
- */
-function shifter_mu_admin_page() {
-	add_menu_page(
-		__( 'Shifter', 'shifter' ),
-		__( 'Shifter', 'shifter' ),
-		'manage_options',
-		'shifter',
-		'Shifter\\MU\\shifter_mu_admin',
-		shifter_icon()
-	);
-
-}
-
-/**
- * Shifter admin page settings
- */
-function shifter_mu_admin() { ?>
-<div class='wrap'>
-<h1>Shifter</h1>
-<div class='card'>
-<h2 class='title'>Generator Settings</h2>
-<span>Customize your static site generator settings for faster build times.</span>
-<p class='submit'><a class='button button-primary' href='admin.php?page=shifter-settings'>Generator Settings</a></p>
-</div>
-<div class='card'>
-<h2 class='title'>Docs & Support</h2>
-<span>Need help with something or have a question? Check out our documentation or contact support for more help.</span>
-<p class='submit'><a target='_blank' rel='noopener noreferrer' class='button button-primary' href='https://support.getshifter.io'>Docs & Support</a></p>
-</div>
-<div class='card'>
-<h2 class='title'>Shifter Blog</h2>
-<span>Learn about WordPress, static site generators, case studies and features sites, upcoming WordCamp events, and the latest news from Shifter.</span>
-<p class='submit'><a class='button button-primary' target='_blank' rel='noopener noreferrer' href='https://www.getshifter.io/blog'>Shifter Blog</a></p>
-</div>
-</div>
-	<?php
-}
-
-	add_action( 'admin_menu', 'Shifter\\MU\\shifter_mu_admin_page' );
-	add_action( 'wp_before_admin_bar_render', 'Shifter\\MU\\shifter_mu_admin_bar' );
