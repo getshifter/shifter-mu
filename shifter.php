@@ -10,7 +10,7 @@
  * @wordpress-plugin
  * Plugin Name:       Shifter
  * Plugin URI:        https://github.com/getshifter/shifter-mu
- * Description:       Shifter MU-Plugin Wrapper
+ * Description:       Shifter Must-Use Functions
  * Version:           0.1.2
  * Author:            Shifter
  * Author URI:        https://getshifter.io
