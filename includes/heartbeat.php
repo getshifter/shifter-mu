@@ -25,5 +25,5 @@ setInterval("shifter_heartbert_getajax()",30000);
 <?php
   }
 }
-add_action( 'wp_footer', 'shifter_heartbert_on_sitepreview_writeScript', 999 );
+add_action( 'wp_footer', __NAMESPACE__ . '\\shifter_heartbert_on_sitepreview_writeScript', 999 );
 ?>

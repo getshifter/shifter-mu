@@ -38,4 +38,5 @@ class redis_cache_fix {
         return;
     }
 };
+
 new redis_cache_fix();

@@ -33,3 +33,6 @@ require_once __DIR__ . '/includes/redis.php';
 
 /** Heartbeat */
 require_once __DIR__ . '/includes/heartbeat.php';
+
+/** Timer */
+require_once __DIR__ . '/includes/timer.php';
