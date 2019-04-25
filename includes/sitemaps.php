@@ -13,6 +13,8 @@
  * License: GPL-2.0
  */
 
+namespace Shifter\MU\Sitemaps;
+
 add_action(
 	'plugins_loaded',
 	function() {
