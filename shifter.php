@@ -23,8 +23,8 @@
 
 namespace Shifter\MU;
 
- /** Shifter Admin */
-require_once __DIR__ . '/admin/shifter-admin.php';
+ /** Admin */
+require_once __DIR__ . '/admin/admin.php';
 
-/** Shifter Cron */
-require_once __DIR__ . '/includes/shifter-cron.php';
+/** Sitemaps */
+require_once __DIR__ . '/includes/sitemaps.php';
