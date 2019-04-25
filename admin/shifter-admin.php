@@ -31,7 +31,7 @@ function shifter_mu_admin_page() {
     __('Shifter', 'shifter'),
     'manage_options',
     'shifter',
-    'Shifter\\MU\\Admin\\shifter_mu_admin',
+    __NAMESPACE__ . '\\shifter_mu_admin',
     shifter_icon()
   );
 
@@ -58,5 +58,5 @@ function shifter_mu_admin() {
   echo "</div>";
 }
 
-add_action('admin_menu', 'Shifter\\MU\\Admin\\shifter_mu_admin_page');
-add_action( 'wp_before_admin_bar_render', 'Shifter\\MU\\Admin\\shifter_mu_admin_bar' );
+add_action('admin_menu', __NAMESPACE__ . '\\shifter_mu_admin_page');
+add_action( 'wp_before_admin_bar_render', __NAMESPACE__ . '\\shifter_mu_admin_bar' );
