@@ -20,7 +20,6 @@
  * Domain Path:       /languages
  */
 
-
 namespace Shifter\MU;
 
  /** Admin */
@@ -28,3 +27,6 @@ require_once __DIR__ . '/admin/admin.php';
 
 /** Sitemaps */
 require_once __DIR__ . '/includes/sitemaps.php';
+
+/** Redis */
+require_once __DIR__ . '/includes/redis.php';
